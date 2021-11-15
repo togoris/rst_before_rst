@@ -35,14 +35,8 @@ public class Basic_movment extends Application {
 		int tank1YSart = 0;
 		double dX1Tank = 0;
 		double dY1Tank = 0;
-		double dX1Point = 0;
-		double dY1Point = 0;
-		double rotation1 = 0;
-		
-		//counter to pick witch ball will be shot
-		int counter1 = 1;
-		int counter2 = 1;
-		int counter3 = 1;
+		double GRAVITY = 0.1;
+		int jumptoken = 1;
 		//array for the starting potitions for the tanks
 		int[] startXSpots = new int[10];
 		int[] startYSpots = new int[10];
@@ -118,96 +112,45 @@ public class Basic_movment extends Application {
 				userTank1.setX(userTank1.getX() + dX1Tank);
 				
 				
-				double n1 = userTank1.getRotate();
+				if (userTank1.getX() < 0 || userTank1.getX()+10 > scene.getWidth()) {
+					userTank1.setX(userTank1.getX()-dX1Tank);
+					dX1Tank = 0;}
+	            if (userTank1.getY()+20> scene.getHeight()) {
+	            	userTank1.setY(userTank1.getY()-dY1Tank);
+	            	dY1Tank = 0; //reverse direction
+	            	jumptoken = 1;
+	            }
+	            if (userTank1.getY()+ 20 < scene.getHeight()) {
+	            	dY1Tank += GRAVITY;
+	            }
+	            	
+	             	
+	           
+	            
+
 				
-				userTank1.setRotate(rotation1 + n1);
+
 			}
 		}
 					
-		private double anglethingypart1(double curentAngle) {
-			//look too bottom method for coments
-			curentAngle %= 360;
-			double yValue = 1;
-			double xValue = 0;
-			if (curentAngle < 0) {
-				curentAngle *= -1;
-				curentAngle = 360 - curentAngle;
-			}
-			if (curentAngle >= 0 && curentAngle <= 180) {
-				if (curentAngle <= 90) {
-					yValue = -1 * ((90 - curentAngle) / 90);
-				} else {
-					xValue = (180 - curentAngle) / 90;
-					yValue = (1 - xValue);
-				}
-			} else {
-				curentAngle -= 180;
-				if (curentAngle <= 90) {
-					yValue = ((90 - curentAngle) / 90);
-				} else {
-					xValue = -1 * ((180 - curentAngle) / 90);
-					yValue = -1 * (1 + xValue);
-				}
-
-			}
-
-			return yValue;
-		}
-		private double anglethingypart2(double curentAngle) {
-			curentAngle %= 360;
-			double yValue = 1;
-			double xValue = 0;
-			if (curentAngle < 0) {
-				curentAngle *= -1;
-				curentAngle = 360 - curentAngle;
-			} // if its in the right
-			if (curentAngle >= 0 && curentAngle <= 180) {
-				// if its in the top right
-				if (curentAngle <= 90) {
-					// y value is how close it is to vertical when 1 is vertical and 0 is hirisontal
-					yValue = (90 - curentAngle) / 90;
-					xValue = 1 - yValue;
-				} // if its in the bottom right
-				else {
-					// same as the y value but 1 as horisontal and 0 as vertical
-					xValue = (180 - curentAngle) / 90;
-
-				}
-				// if its in the left
-			} else {
-				curentAngle -= 180;
-
-				// if it is top left
-				if (curentAngle <= 90) {
-					yValue = -1 * ((90 - curentAngle) / 90);
-					xValue = -1 * (1 + yValue);
-				} // if its in the bottom left
-				else {
-					xValue = -1 * ((180 - curentAngle) / 90);
-
-				}
-			}
-			return xValue;
-		}
+		
 		private void handleKeyPressed(KeyEvent event) {
 			KeyCode code = event.getCode();
 
 			// all of the movment code
 
 			if (code == KeyCode.UP || code == KeyCode.KP_UP) {
-				dY1Tank = TANK_SPEED * anglethingypart1(userTank1.getRotate());
-				dX1Tank = TANK_SPEED * anglethingypart2(userTank1.getRotate());
+				jump();
 			}
 			if (code == KeyCode.DOWN || code == KeyCode.KP_DOWN) {
-				dY1Tank = -TANK_SPEED * anglethingypart1(userTank1.getRotate());
-				dX1Tank = -TANK_SPEED * anglethingypart2(userTank1.getRotate());
+				
 
 			}
 			if (code == KeyCode.LEFT || code == KeyCode.KP_LEFT) {
-				rotation1 = -5;
+				dX1Tank = -5 ;
 			}
 			if (code == KeyCode.RIGHT || code == KeyCode.KP_RIGHT) {
-				rotation1 = 5;
+				dX1Tank = 5 ;
 			
 			}
 
@@ -217,12 +160,14 @@ public class Basic_movment extends Application {
 			//all of the stoping code
 			if (code == KeyCode.UP || code == KeyCode.KP_UP || code == KeyCode.DOWN || code == KeyCode.KP_DOWN) {
 				dY1Tank = 0;
+				
+				
+			}
+			if (code == KeyCode.LEFT || code == KeyCode.KP_LEFT || code == KeyCode.RIGHT|| code == KeyCode.KP_RIGHT) {
 				dX1Tank = 0;
-				dY1Point = 0;
-				dX1Point = 0;
-			} else if (code == KeyCode.LEFT || code == KeyCode.KP_LEFT || code == KeyCode.RIGHT
-					|| code == KeyCode.KP_RIGHT) {
-				rotation1 = 0;}
+				
+				
+			}
 			
 		}
 		double getRandomNumber(int low, int high) {
@@ -231,6 +176,11 @@ public class Basic_movment extends Application {
 		}
 		public static void main(String[] args) {
 			launch(args);
+		}
+		private void jump() {
+			if(jumptoken == 1) {
+			dY1Tank -= 5;}
+			jumptoken = 0;
 		}
 	}
 
