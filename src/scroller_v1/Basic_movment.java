@@ -25,8 +25,8 @@ public class Basic_movment extends Application {
 		static final int SCREEN_HEIGHT = 841;
 		// Constants for speed and size of objects in the game
 		final int BALL_SIZE = 5;
-		final int TANK_HEIGHT = 20;
-		final int TANK_WIDTH = 12;
+		final int TANK_HEIGHT = 10;
+		final int TANK_WIDTH = 10;
 		final int TANK_SPEED = 3;
 		final int USER_TANK_SPEED = 5;
 		final int FONT_SIZE = 20;
@@ -35,7 +35,7 @@ public class Basic_movment extends Application {
 		int tank1YSart = 0;
 		double dX1Tank = 0;
 		double dY1Tank = 0;
-		double GRAVITY = 0.1;
+		double GRAVITY = 0.2;
 		int jumptoken = 1;
 		//array for the starting potitions for the tanks
 		int[] startXSpots = new int[10];
@@ -49,6 +49,7 @@ public class Basic_movment extends Application {
 		//array for all of the walls
 		Rectangle[] verticalWalls = new Rectangle[0];
 		Rectangle[] horisontalWalls = new Rectangle[0];
+		Rectangle[] platforms = new Rectangle[2];
 		
 		// controls the animation
 		GameTimer timer;
@@ -66,29 +67,29 @@ public class Basic_movment extends Application {
 			userTank1 = new Rectangle(tank1XSart, tank1YSart, TANK_WIDTH, TANK_HEIGHT);
 			
 			userTank1.setFill(Paint.valueOf("Red"));
-			
+			inisializeplatforms();
 			//the mesage that shows teh points
 			
 			// add all elements to the scene graph
 			//ilitialy drawing everything
 			Group root = new Group(userTank1);
 			//drawing all of the walls (thank u for this code miss)
-			for (Rectangle rectangle : verticalWalls) {
-				root.getChildren().add(rectangle);
-			}
-			for (Rectangle rectangle : horisontalWalls) {
-				root.getChildren().add(rectangle);
-			}
+			
+			
 
 			// animation timer to update and render graphics
 			timer = new GameTimer();
 			timer.start();
 
+			
+			for (Rectangle rectangle : platforms) {
+				root.getChildren().add(rectangle);
+			}
 			// Create the scene and set it to respond to user events
 			scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
 			scene.setOnKeyPressed(event -> handleKeyPressed(event));
 			scene.setOnKeyReleased(event -> handleKeyReleased(event));
-
+			
 			// Set up the stage
 			myStage.setTitle("Tanks_v2");
 			myStage.setScene(scene);
@@ -106,25 +107,16 @@ public class Basic_movment extends Application {
 				//all of the colition detection
 				
 				//drawing all of the objects again
-				
+				platformCheck(userTank1);
 				userTank1.setY(userTank1.getY() + dY1Tank);
 				
 				userTank1.setX(userTank1.getX() + dX1Tank);
 				
+				walls();
 				
-				if (userTank1.getX() < 0 || userTank1.getX()+10 > scene.getWidth()) {
-					userTank1.setX(userTank1.getX()-dX1Tank);
-					dX1Tank = 0;}
-	            if (userTank1.getY()+20> scene.getHeight()) {
-	            	userTank1.setY(userTank1.getY()-dY1Tank);
-	            	dY1Tank = 0; //reverse direction
-	            	jumptoken = 1;
-	            }
-	            if (userTank1.getY()+ 20 < scene.getHeight()) {
+				if (userTank1.getY()+ 10 < scene.getHeight()) {
 	            	dY1Tank += GRAVITY;
 	            }
-	            	
-	             	
 	           
 	            
 
@@ -179,8 +171,41 @@ public class Basic_movment extends Application {
 		}
 		private void jump() {
 			if(jumptoken == 1) {
-			dY1Tank -= 5;}
+			//maybe make accelerated jumping
+				dY1Tank -= 5;
+				userTank1.setY(userTank1.getY() -1);
+			}
 			jumptoken = 0;
 		}
-	}
+		private void walls() {
+			if (userTank1.getX() < 0 || userTank1.getX()+10 > scene.getWidth()) {
+				userTank1.setX(userTank1.getX()-dX1Tank);
+				dX1Tank = 0;
+			}
+            if (userTank1.getY()+10> scene.getHeight()) {
+            	userTank1.setY(userTank1.getY()-dY1Tank);
+            	dY1Tank = 0; //reverse direction
+            	jumptoken = 1;
+            }
+            
+            
+		}
+		private void inisializeplatforms() {
+			platforms[0] = new Rectangle(SCREEN_WIDTH/2, SCREEN_HEIGHT-100, 50, 10);
+			platforms[1] = new Rectangle(SCREEN_WIDTH/2-50, SCREEN_HEIGHT-50, 50, 10);
+		}
+		private void platformCheck(Rectangle rectangle){
+			Bounds tank = rectangle.getBoundsInLocal();
+			for (int i = 0; i < platforms.length; i++) {
+				Bounds wall = platforms[i].getBoundsInLocal();
+				
+				if (tank.intersects(wall)) {
+					
+					dY1Tank = 0;
+					userTank1.setY(userTank1.getY() - dY1Tank);
+					jumptoken = 1;
+				}
+			}
+		}
+}
 
