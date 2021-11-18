@@ -21,8 +21,8 @@ public class Basic_movment extends Application {
 
 
 		// initial size of screen; game still works after resize
-		static final int SCREEN_WIDTH = 841;
-		static final int SCREEN_HEIGHT = 841;
+		static final int SCREEN_WIDTH = 1280;
+		static final int SCREEN_HEIGHT = 720;
 		// Constants for speed and size of objects in the game
 		final int BALL_SIZE = 5;
 		final int TANK_HEIGHT = 10;
@@ -40,7 +40,14 @@ public class Basic_movment extends Application {
 		//array for the starting potitions for the tanks
 		int[] startXSpots = new int[10];
 		int[] startYSpots = new int[10];
+		int level2 = SCREEN_HEIGHT/2;
+		int spacing = 150;
+		int level1 = level2+spacing;
+		int level3 = level2-spacing;
+		int platformWidth = 50;
+		int platformHeight = 10;
 		// shapes for the game
+		
 		
 		Rectangle userTank1;
 		
@@ -173,7 +180,7 @@ public class Basic_movment extends Application {
 		private void jump() {
 			if(jumptoken == 1) {
 			//maybe make accelerated jumping
-				dY1Tank -= 5;
+				dY1Tank -= 10;
 				userTank1.setY(userTank1.getY() -1);
 			}
 			jumptoken = 0;
@@ -192,8 +199,9 @@ public class Basic_movment extends Application {
             
 		}
 		private void inisializeplatforms() {
-			platforms[0][0] = new Rectangle(SCREEN_WIDTH/2, SCREEN_HEIGHT-100, 50, 10);
-			platforms[0][1] = new Rectangle(SCREEN_WIDTH/2-50, SCREEN_HEIGHT-50, 50, 10);
+			
+			platforms[0][0] = new Rectangle(0, level2, platformWidth, platformHeight);
+			platforms[0][1] = new Rectangle(0, level1, platformWidth, platformHeight);
 		}
 		private void platformCheck(Rectangle rectangle){
 			Bounds tank = rectangle.getBoundsInLocal();
@@ -206,7 +214,11 @@ public class Basic_movment extends Application {
 					dY1Tank = 0;
 					userTank1.setY(userTank1.getY() - dY1Tank);
 					jumptoken = 1;
-				}}
+				}if(platforms[i][j].getY()+1<userTank1.getY()+TANK_HEIGHT && platforms[i][j].getY()+platformHeight>userTank1.getY() &&
+						platforms[i][j].getX()<userTank1.getX() && platforms[i][j].getX()+platformWidth>userTank1.getX()+TANK_WIDTH) {
+					userTank1.setY(userTank1.getY()-1);
+				}
+				}
 			}
 		}
 }
