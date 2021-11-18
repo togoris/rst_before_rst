@@ -49,7 +49,8 @@ public class Basic_movment extends Application {
 		//array for all of the walls
 		Rectangle[] verticalWalls = new Rectangle[0];
 		Rectangle[] horisontalWalls = new Rectangle[0];
-		Rectangle[] platforms = new Rectangle[2];
+		
+		Rectangle[][] platforms = new Rectangle[1][2];
 		
 		// controls the animation
 		GameTimer timer;
@@ -82,7 +83,7 @@ public class Basic_movment extends Application {
 			timer.start();
 
 			
-			for (Rectangle rectangle : platforms) {
+			for (Rectangle rectangle : platforms[0]) {
 				root.getChildren().add(rectangle);
 			}
 			// Create the scene and set it to respond to user events
@@ -191,20 +192,21 @@ public class Basic_movment extends Application {
             
 		}
 		private void inisializeplatforms() {
-			platforms[0] = new Rectangle(SCREEN_WIDTH/2, SCREEN_HEIGHT-100, 50, 10);
-			platforms[1] = new Rectangle(SCREEN_WIDTH/2-50, SCREEN_HEIGHT-50, 50, 10);
+			platforms[0][0] = new Rectangle(SCREEN_WIDTH/2, SCREEN_HEIGHT-100, 50, 10);
+			platforms[0][1] = new Rectangle(SCREEN_WIDTH/2-50, SCREEN_HEIGHT-50, 50, 10);
 		}
 		private void platformCheck(Rectangle rectangle){
 			Bounds tank = rectangle.getBoundsInLocal();
 			for (int i = 0; i < platforms.length; i++) {
-				Bounds wall = platforms[i].getBoundsInLocal();
+				for(int j = 0; j < platforms[i].length; j++) {
+				Bounds wall = platforms[i][j].getBoundsInLocal();
 				
 				if (tank.intersects(wall)) {
 					
 					dY1Tank = 0;
 					userTank1.setY(userTank1.getY() - dY1Tank);
 					jumptoken = 1;
-				}
+				}}
 			}
 		}
 }
