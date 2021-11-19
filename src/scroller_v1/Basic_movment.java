@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
@@ -28,11 +29,8 @@ public class Basic_movment extends Application {
 		final int BALL_SIZE = 5;
 		final int TANK_HEIGHT = 10;
 		final int TANK_WIDTH = 10;
-		final int TANK_SPEED = 3;
-		final int USER_TANK_SPEED = 5;
-		final int FONT_SIZE = 20;
 		//all of the movment variables
-		int tank1XSart = 5;
+		int tank1XSart = 0;
 		int tank1YSart = 0;
 		double dX1Tank = 0;
 		double dY1Tank = 0;
@@ -66,6 +64,9 @@ public class Basic_movment extends Application {
 		int platformWidth = 50;
 		int platformHeight = 10;
 		int godown;
+		int shotCounter;
+		int offscreen = -500;
+		int shotSize = 2;
 		// shapes for the game
 		
 		
@@ -79,6 +80,7 @@ public class Basic_movment extends Application {
 		
 		Rectangle[][][] platforms = new Rectangle[1][9][4];
 		Rectangle[][] enemies = new Rectangle[1][1];
+		Circle[] shots = new Circle[10];
 		
 		// controls the animation
 		GameTimer timer;
@@ -99,6 +101,7 @@ public class Basic_movment extends Application {
 			player1.setFill(Paint.valueOf("Red"));
 			inisializePlatforms();
 			inisializeEnemies();
+			inisializeShots();
 			//the mesage that shows teh points
 			
 			// add all elements to the scene graph
@@ -114,11 +117,8 @@ public class Basic_movment extends Application {
 
 			for (int i = 0; i < platforms.length; i++) {
 				for(int j = 0; j < platforms[i].length; j++) {
-					
 					for (Rectangle rectangle : platforms[i][j]) {
-						
-			
-					root.getChildren().add(rectangle);
+						root.getChildren().add(rectangle);
 					}
 				}
 			}
@@ -181,15 +181,18 @@ public class Basic_movment extends Application {
 
 			}
 			if (code == KeyCode.LEFT || code == KeyCode.KP_LEFT) {
-				dX1Tank = -5 ;
+				dX1Tank = -3 ;
 			}
 			if (code == KeyCode.RIGHT || code == KeyCode.KP_RIGHT) {
-				dX1Tank = 5 ;
+				dX1Tank = 3 ;
 			
 			}
 			if (code == KeyCode.R){
 				player1.setY(0);
 				player1.setX(0);
+			}
+			if(code == KeyCode.W ) {
+				shoot();
 			}
 
 		}
@@ -239,9 +242,10 @@ public class Basic_movment extends Application {
             
             
 		}
+		
 		private void inisializePlatforms() {
 			int startValue = 0;
-			int offscreen = -500;
+			
 			platforms[0][0][0] = new Rectangle(startValue+Colom1, level1, platformWidth, platformHeight);
 			platforms[0][0][1] = new Rectangle(startValue+Colom1, level2, platformWidth, platformHeight);
 			platforms[0][0][2] = new Rectangle(startValue+Colom1, level3, platformWidth, platformHeight);
@@ -282,6 +286,23 @@ public class Basic_movment extends Application {
 		private void inisializeEnemies() {
 			
 		}
+		private void inisializeShots() {
+			shots[0] = new Circle(offscreen,offscreen,shotSize);
+			shots[1] = new Circle(offscreen,offscreen,shotSize);
+			shots[2] = new Circle(offscreen,offscreen,shotSize);
+			shots[3] = new Circle(offscreen,offscreen,shotSize);
+			shots[4] = new Circle(offscreen,offscreen,shotSize);
+			shots[5] = new Circle(offscreen,offscreen,shotSize);
+			shots[6] = new Circle(offscreen,offscreen,shotSize);
+			shots[7] = new Circle(offscreen,offscreen,shotSize);
+			shots[8] = new Circle(offscreen,offscreen,shotSize);
+			shots[9] = new Circle(offscreen,offscreen,shotSize);
+
+		}
+		private void shoot() {
+			shotCounter +=1;
+			
+		}
 		private void platformCheck(Rectangle rectangle){
 			Bounds tank = rectangle.getBoundsInLocal();
 			for (int i = 0; i < platforms.length; i++) {
@@ -296,7 +317,7 @@ public class Basic_movment extends Application {
 								jumptoken = 1;
 							}		
 							if(platforms[i][j][k].getY()+1<=player1.getY()+TANK_HEIGHT && platforms[i][j][k].getY()+platformHeight>=player1.getY() &&
-									platforms[i][j][k].getX()<=player1.getX() && platforms[i][j][k].getX()+platformWidth>=player1.getX()) {
+									platforms[i][j][k].getX()<=player1.getX()+TANK_WIDTH && platforms[i][j][k].getX()+platformWidth>=player1.getX()) {
 									player1.setY(player1.getY()-1);
 									
 							}
