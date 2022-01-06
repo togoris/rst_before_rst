@@ -2,10 +2,14 @@ package scroller_v1;
 
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -41,36 +45,44 @@ public class Basic_movment extends Application {
 		int[] startYSpots = new int[10];
 
 		int spacing = 150;
-		int level2 = SCREEN_HEIGHT/2;
-		int level1 = level2+spacing;
-		int level3 = level2-spacing;
-		int level2B = SCREEN_HEIGHT/2+75;
-		int level1B = level2B+spacing;
-		int level3B = level2B-(spacing*1);
-		int level4B = level2B-(spacing*2);
+//		int level2 = SCREEN_HEIGHT/2;
+//		int level1 = level2+spacing;
+//		int level3 = level2-spacing;
+//		int level2B = SCREEN_HEIGHT/2+75;
+//		int level1B = level2B+spacing;
+//		int level3B = level2B-(spacing*1);
+//		int level4B = level2B-(spacing*2);
+//		
+//		int a = 0;
+//		int Colom1 = a;
+//		int Colom2 = a+spacing;
+//		int Colom3 = a+spacing*2;
+//		int Colom4 = a+spacing*3;
+//		int Colom5 = a+spacing*4;
+//		int Colom6 = a+spacing*5;
+//		int Colom7 = a+spacing*6;
+//		int Colom8 = a+spacing*7;
+//		int Colom9 = a+spacing*8;
+		List<List<Platforms>> sceen1 = new ArrayList<List<Platforms>>();
 		
-		int a = 0;
-		int Colom1 = a;
-		int Colom2 = a+spacing;
-		int Colom3 = a+spacing*2;
-		int Colom4 = a+spacing*3;
-		int Colom5 = a+spacing*4;
-		int Colom6 = a+spacing*5;
-		int Colom7 = a+spacing*6;
-		int Colom8 = a+spacing*7;
-		int Colom9 = a+spacing*8;
-		
-		
+		int botWidth = 5;
+		int botHeight = 5;
 		int platformWidth = 50;
 		int platformHeight = 10;
 		int godown;
-		int shotCounter;
+		int shotCounter = 0;
 		int offscreen = -500;
 		int shotSize = 2;
+		int shotXSpeed = 5;
+		
+		int xofset = 0;
 		// shapes for the game
 		
 		
 		Rectangle player1;
+		
+	
+		
 		
 		Rectangle point1;
 		
@@ -78,12 +90,23 @@ public class Basic_movment extends Application {
 		Rectangle[] verticalWalls = new Rectangle[0];
 		Rectangle[] horisontalWalls = new Rectangle[0];
 		
-		Rectangle[][][] platforms = new Rectangle[1][9][4];
-		Rectangle[][] enemies = new Rectangle[1][1];
-		Circle[] shots = new Circle[10];
+//		Rectangle[][][] platforms = new Rectangle[1][9][4];
+		List<Platforms> platformcheck = new ArrayList<Platforms>();
+		
+		Rectangle[][] bots = new Rectangle[3][1];
+		
+ 
+		Circle[] PlayerShots = new Circle[10];
+		int[] dxPlayerShots = new int[10];
+		int[] dyPlayerShots = new int[10];
+		
+		Circle[][] BotShots = new Circle[3][10];
+		int[][] dxBotShots = new int[3][10];
+		int[][] dyBotShots = new int[3][10];
+		
 		
 		// controls the animation
-		GameTimer timer;
+		AnimationTimer timer;
 		// Reference for screen
 		Scene scene;
 		// Play sound when ball hits paddle
@@ -102,7 +125,16 @@ public class Basic_movment extends Application {
 			inisializePlatforms();
 			inisializeEnemies();
 			inisializeShots();
-			//the mesage that shows teh points
+			
+			
+			
+			bot botA = new bot1(offscreen,offscreen);
+			bot botB = new bot2(offscreen,offscreen);
+			bot botC = new bot3(offscreen,offscreen);
+			//the mesage that1 shows the points
+			botA.move();
+			botB.move();
+			botC.move();
 			
 			// add all elements to the scene graph
 			//ilitialy drawing everything
@@ -112,21 +144,81 @@ public class Basic_movment extends Application {
 			
 
 			// animation timer to update and render graphics
-			timer = new GameTimer();
+			timer = new AnimationTimer() {
+				public void handle(long now) {
+					root.getChildren().clear();
+					root.getChildren().add(player1);
+					for(Platforms p:sceen1.get(0)) {
+						root.getChildren().add(p.getRect());
+					}
+					
+					checkPlatforms();
+					wallsColition();
+					platformCheck(player1);
+					player1.setY(player1.getY() + dY1Tank);
+					player1.setX(player1.getX() + dX1Tank);
+					
+					for(int i=0; i<PlayerShots.length; i++) {
+						PlayerShots[i].setCenterX(PlayerShots[i].getCenterX()+dxPlayerShots[i]);
+						PlayerShots[i].setCenterY(PlayerShots[i].getCenterY()+dyPlayerShots[i]);
+					}
+					
+					if(player1.getX() >= SCREEN_WIDTH*0.75) {
+						for(Platforms p:sceen1.get(0)) {
+							
+							p.x-=3;
+								
+							}
+						
+							player1.setX(player1.getX()-3);
+						
+						}
+					if(player1.getX() <= SCREEN_WIDTH*0.1) {
+						for(Platforms p:sceen1.get(0)) {
+							
+							p.x+=3;
+								
+							}
+						
+							player1.setX(player1.getX()+3);
+						
+						}
+					
+					if (player1.getY()+ 10 < scene.getHeight()) {
+		            	dY1Tank += GRAVITY;
+		            }
+					if (player1.getX()>=SCREEN_WIDTH*(0.75)) {
+						moveScreen();
+					}
+		            
+
+					
+
+				}
+			};
+			
 			timer.start();
 
-			for (int i = 0; i < platforms.length; i++) {
-				for(int j = 0; j < platforms[i].length; j++) {
-					for (Rectangle rectangle : platforms[i][j]) {
-						root.getChildren().add(rectangle);
+			for (int i = 0; i < sceen1.size(); i++) {
+					for (Platforms rectangle : sceen1.get(i)) {
+						root.getChildren().add(rectangle.getRect());
 					}
 				}
+			
+			for (Circle Circle : PlayerShots) {
+			    root.getChildren().add(Circle);
 			}
-//			for(int i = 0; i < enemies.length; i++) {
-//				for (Rectangle rectangle : enemies[i]) {
-//					root.getChildren().add(rectangle);
-//					}
-//			}
+			for(int i=0; i <BotShots.length; i++) {
+				for (Circle Circle : BotShots[i]) {
+					root.getChildren().add(Circle);
+				}
+				}
+				
+			for(int i = 0; i < bots.length; i++) {
+				for (Rectangle rectangle : bots[i]) {
+					root.getChildren().add(rectangle);
+					}
+			}
 			// Create the scene and set it to respond to user events
 			scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
 			scene.setOnKeyPressed(event -> handleKeyPressed(event));
@@ -139,38 +231,33 @@ public class Basic_movment extends Application {
 			myStage.show();
 
 		}
-		class GameTimer extends AnimationTimer {
-			@Override
-			public void handle(long now) {
-				//making variables to use for colition detection
-				
-				//updating the score each second or whatever
-				
-				//all of the colition detection
-				
-				//drawing all of the objects again
-				wallsColition();
-				platformCheck(player1);
-				player1.setY(player1.getY() + dY1Tank);
-				player1.setX(player1.getX() + dX1Tank);
-				
-				
-				
-				if (player1.getY()+ 10 < scene.getHeight()) {
-	            	dY1Tank += GRAVITY;
-	            }
-	           
-	            
-
-				
-
+		private void checkPlatforms() {
+			for (int i = 0; i < sceen1.size(); i++) {
+				for(int j = 0; j < sceen1.get(i).size(); j++) {
+						
+					if(1==checkOnscreen(sceen1.get(i).get(j).getRect())) {
+						platformcheck.add(sceen1.get(i).get(j));
+					}
+						
+					}
+				}
 			}
-		}
-					
 		
+		private int checkOnscreen(Rectangle platform) {
+			int check;
+			check = (int) (platform.getX()*2+platformWidth);
+			if (check> SCREEN_WIDTH || check < 0) {
+				return 1;
+			}else
+				return 0;
+		}
+		private void moveScreen() {
+			
+		}
 		private void handleKeyPressed(KeyEvent event) {
+			
 			KeyCode code = event.getCode();
-
+			
 			// all of the movment code
 
 			if (code == KeyCode.UP || code == KeyCode.KP_UP) {
@@ -191,7 +278,8 @@ public class Basic_movment extends Application {
 				player1.setY(0);
 				player1.setX(0);
 			}
-			if(code == KeyCode.W ) {
+			
+			if (code == KeyCode.Q) {
 				shoot();
 			}
 
@@ -242,82 +330,147 @@ public class Basic_movment extends Application {
             
             
 		}
-		
 		private void inisializePlatforms() {
-			int startValue = 0;
+			List<Platforms> sceen1 = new ArrayList<Platforms>();
+			String a = 
+			"000000000\n"+
+			"111111111\n"+
+			"111111111\n"+
+			"111111111\n"+
+			"111111111\n"+
+			"111111111\n"+
+			"000000000\n";
+			int y = 0;
+			for(String s: a.split("\n")) {
+				int x = 0;
+				for(String s1: s.split("")) {
+					if(s1.equals("1")) {
+						sceen1.add(new Platforms(x,y,0));
+					}
+					x+=spacing;
+					
+				}
+				y+=spacing;
+				
+			}
 			
-			platforms[0][0][0] = new Rectangle(startValue+Colom1, level1, platformWidth, platformHeight);
-			platforms[0][0][1] = new Rectangle(startValue+Colom1, level2, platformWidth, platformHeight);
-			platforms[0][0][2] = new Rectangle(startValue+Colom1, level3, platformWidth, platformHeight);
-			platforms[0][0][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
-				platforms[0][1][0] = new Rectangle(startValue+Colom2, level1B, platformWidth, platformHeight);
-				platforms[0][1][1] = new Rectangle(startValue+Colom2, level2B, platformWidth, platformHeight);
-				platforms[0][1][2] = new Rectangle(startValue+Colom2, level3B, platformWidth, platformHeight);
-				platforms[0][1][3] = new Rectangle(startValue+Colom2, level4B, platformWidth, platformHeight);
-			platforms[0][2][0] = new Rectangle(startValue+Colom3, level1, platformWidth, platformHeight);
-			platforms[0][2][1] = new Rectangle(startValue+Colom3, level2, platformWidth, platformHeight);
-			platforms[0][2][2] = new Rectangle(startValue+Colom3, level3, platformWidth, platformHeight);
-			platforms[0][2][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
-				platforms[0][3][0] = new Rectangle(startValue+Colom4, level1B, platformWidth, platformHeight);
-				platforms[0][3][1] = new Rectangle(startValue+Colom4, level2B, platformWidth, platformHeight);
-				platforms[0][3][2] = new Rectangle(startValue+Colom4, level3B, platformWidth, platformHeight);
-				platforms[0][3][3] = new Rectangle(startValue+Colom4, level4B, platformWidth, platformHeight);
-			platforms[0][4][0] = new Rectangle(startValue+Colom5, level3, platformWidth, platformHeight);
-			platforms[0][4][1] = new Rectangle(startValue+Colom5, level1, platformWidth, platformHeight);
-			platforms[0][4][2] = new Rectangle(startValue+Colom5, level2, platformWidth, platformHeight);
-			platforms[0][4][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
-				platforms[0][5][0] = new Rectangle(startValue+Colom6, level4B, platformWidth, platformHeight);
-				platforms[0][5][1] = new Rectangle(startValue+Colom6, level1B, platformWidth, platformHeight);
-				platforms[0][5][2] = new Rectangle(startValue+Colom6, level2B, platformWidth, platformHeight);
-				platforms[0][5][3] = new Rectangle(startValue+Colom6, level3B, platformWidth, platformHeight);
-			platforms[0][6][0] = new Rectangle(startValue+Colom7, level3, platformWidth, platformHeight);
-			platforms[0][6][1] = new Rectangle(startValue+Colom7, level1, platformWidth, platformHeight);
-			platforms[0][6][2] = new Rectangle(startValue+Colom7, level2, platformWidth, platformHeight);
-			platforms[0][6][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
-				platforms[0][7][0] = new Rectangle(startValue+Colom8, level4B, platformWidth, platformHeight);
-				platforms[0][7][1] = new Rectangle(startValue+Colom8, level1B, platformWidth, platformHeight);
-				platforms[0][7][2] = new Rectangle(startValue+Colom8, level2B, platformWidth, platformHeight);
-				platforms[0][7][3] = new Rectangle(startValue+Colom8, level3B, platformWidth, platformHeight);
-			platforms[0][8][0] = new Rectangle(startValue+Colom9, level3, platformWidth, platformHeight);
-			platforms[0][8][1] = new Rectangle(startValue+Colom9, level1, platformWidth, platformHeight);
-			platforms[0][8][2] = new Rectangle(startValue+Colom9 , level2, platformWidth, platformHeight);
-			platforms[0][8][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
+			this.sceen1.add(sceen1);
+//			int startValue = 0;
+			
+//			platforms[0][0][0] = new Rectangle(startValue+Colom1, level1, platformWidth, platformHeight);
+//			platforms[0][0][1] = new Rectangle(startValue+Colom1, level2, platformWidth, platformHeight);
+//			platforms[0][0][2] = new Rectangle(startValue+Colom1, level3, platformWidth, platformHeight);
+//			platforms[0][0][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
+//				platforms[0][1][0] = new Rectangle(startValue+Colom2, level1B, platformWidth, platformHeight);
+//				platforms[0][1][1] = new Rectangle(startValue+Colom2, level2B, platformWidth, platformHeight);
+//				platforms[0][1][2] = new Rectangle(startValue+Colom2, level3B, platformWidth, platformHeight);
+//				platforms[0][1][3] = new Rectangle(startValue+Colom2, level4B, platformWidth, platformHeight);
+//			platforms[0][2][0] = new Rectangle(startValue+Colom3, level1, platformWidth, platformHeight);
+//			platforms[0][2][1] = new Rectangle(startValue+Colom3, level2, platformWidth, platformHeight);
+//			platforms[0][2][2] = new Rectangle(startValue+Colom3, level3, platformWidth, platformHeight);
+//			platforms[0][2][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
+//				platforms[0][3][0] = new Rectangle(startValue+Colom4, level1B, platformWidth, platformHeight);
+//				platforms[0][3][1] = new Rectangle(startValue+Colom4, level2B, platformWidth, platformHeight);
+//				platforms[0][3][2] = new Rectangle(startValue+Colom4, level3B, platformWidth, platformHeight);
+//				platforms[0][3][3] = new Rectangle(startValue+Colom4, level4B, platformWidth, platformHeight);
+//			platforms[0][4][0] = new Rectangle(startValue+Colom5, level3, platformWidth, platformHeight);
+//			platforms[0][4][1] = new Rectangle(startValue+Colom5, level1, platformWidth, platformHeight);
+//			platforms[0][4][2] = new Rectangle(startValue+Colom5, level2, platformWidth, platformHeight);
+//			platforms[0][4][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
+//				platforms[0][5][0] = new Rectangle(startValue+Colom6, level4B, platformWidth, platformHeight);
+//				platforms[0][5][1] = new Rectangle(startValue+Colom6, level1B, platformWidth, platformHeight);
+//				platforms[0][5][2] = new Rectangle(startValue+Colom6, level2B, platformWidth, platformHeight);
+//				platforms[0][5][3] = new Rectangle(startValue+Colom6, level3B, platformWidth, platformHeight);
+//			platforms[0][6][0] = new Rectangle(startValue+Colom7, level3, platformWidth, platformHeight);
+//			platforms[0][6][1] = new Rectangle(startValue+Colom7, level1, platformWidth, platformHeight);
+//			platforms[0][6][2] = new Rectangle(startValue+Colom7, level2, platformWidth, platformHeight);
+//			platforms[0][6][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
+//				platforms[0][7][0] = new Rectangle(startValue+Colom8, level4B, platformWidth, platformHeight);
+//				platforms[0][7][1] = new Rectangle(startValue+Colom8, level1B, platformWidth, platformHeight);
+//				platforms[0][7][2] = new Rectangle(startValue+Colom8, level2B, platformWidth, platformHeight);
+//				platforms[0][7][3] = new Rectangle(startValue+Colom8, level3B, platformWidth, platformHeight);
+//			platforms[0][8][0] = new Rectangle(startValue+Colom9, level3, platformWidth, platformHeight);
+//			platforms[0][8][1] = new Rectangle(startValue+Colom9, level1, platformWidth, platformHeight);
+//			platforms[0][8][2] = new Rectangle(startValue+Colom9 , level2, platformWidth, platformHeight);
+//			platforms[0][8][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
 		}
 		private void inisializeEnemies() {
-			
+			bots[0][0] = new Rectangle(offscreen, offscreen, botWidth, botHeight);
+			bots[1][0] = new Rectangle(offscreen, offscreen, botWidth, botHeight);
+			bots[2][0] = new Rectangle(offscreen, offscreen, botWidth, botHeight);
 		}
 		private void inisializeShots() {
-			shots[0] = new Circle(offscreen,offscreen,shotSize);
-			shots[1] = new Circle(offscreen,offscreen,shotSize);
-			shots[2] = new Circle(offscreen,offscreen,shotSize);
-			shots[3] = new Circle(offscreen,offscreen,shotSize);
-			shots[4] = new Circle(offscreen,offscreen,shotSize);
-			shots[5] = new Circle(offscreen,offscreen,shotSize);
-			shots[6] = new Circle(offscreen,offscreen,shotSize);
-			shots[7] = new Circle(offscreen,offscreen,shotSize);
-			shots[8] = new Circle(offscreen,offscreen,shotSize);
-			shots[9] = new Circle(offscreen,offscreen,shotSize);
+			PlayerShots[0] = new Circle(offscreen,offscreen,shotSize);
+			PlayerShots[1] = new Circle(offscreen,offscreen,shotSize);
+			PlayerShots[2] = new Circle(offscreen,offscreen,shotSize);
+			PlayerShots[3] = new Circle(offscreen,offscreen,shotSize);
+			PlayerShots[4] = new Circle(offscreen,offscreen,shotSize);
+			PlayerShots[5] = new Circle(offscreen,offscreen,shotSize);
+			PlayerShots[6] = new Circle(offscreen,offscreen,shotSize);
+			PlayerShots[7] = new Circle(offscreen,offscreen,shotSize);
+			PlayerShots[8] = new Circle(offscreen,offscreen,shotSize);
+			PlayerShots[9] = new Circle(offscreen,offscreen,shotSize);
+			
+			BotShots[0][0] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[0][1] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[0][2] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[0][3] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[0][4] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[0][5] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[0][6] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[0][7] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[0][8] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[0][9] = new Circle(offscreen,offscreen,shotSize);
+			
+			BotShots[1][0] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[1][1] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[1][2] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[1][3] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[1][4] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[1][5] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[1][6] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[1][7] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[1][8] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[1][9] = new Circle(offscreen,offscreen,shotSize);
 
+			BotShots[2][0] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[2][1] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[2][2] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[2][3] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[2][4] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[2][5] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[2][6] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[2][7] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[2][8] = new Circle(offscreen,offscreen,shotSize);
+			BotShots[2][9] = new Circle(offscreen,offscreen,shotSize);
 		}
 		private void shoot() {
+			if(shotCounter >=9)
+				shotCounter =0;
 			shotCounter +=1;
+			dxPlayerShots[shotCounter] = shotXSpeed;
+			PlayerShots[shotCounter].setCenterX(player1.getX()+TANK_WIDTH/2);
+			PlayerShots[shotCounter].setCenterY(player1.getY()+TANK_HEIGHT/2);
+			
+			Console.print(shotCounter);
 			
 		}
 		private void platformCheck(Rectangle rectangle){
 			Bounds tank = rectangle.getBoundsInLocal();
-			for (int i = 0; i < platforms.length; i++) {
-				for(int j = 0; j < platforms[i].length; j++) {
-					for(int k = 0;k<platforms[i][j].length; k++) {
-						Bounds wall = platforms[i][j][k].getBoundsInLocal();
-				
+			for (int i = 0; i < sceen1.size(); i++) {
+				for(int j = 0; j < sceen1.get(i).size();j++) {
+					Platforms checker = sceen1.get(i).get(j);
+					Bounds wall = checker.getRect().getBoundsInLocal();
 						if(godown == 0) {
 							if (tank.intersects(wall)) {
 								dY1Tank = 0;
 								player1.setY(player1.getY() - dY1Tank);
 								jumptoken = 1;
 							}		
-							if(platforms[i][j][k].getY()+1<=player1.getY()+TANK_HEIGHT && platforms[i][j][k].getY()+platformHeight>=player1.getY() &&
-									platforms[i][j][k].getX()<=player1.getX()+TANK_WIDTH && platforms[i][j][k].getX()+platformWidth>=player1.getX()) {
+							if(checker.y+1<=player1.getY()+TANK_HEIGHT && 
+							   checker.y+platformHeight+1>=player1.getY() &&
+							   checker.x<=player1.getX()+TANK_WIDTH && 
+							   checker.x+platformWidth>=player1.getX()) {
 									player1.setY(player1.getY()-1);
 									
 							}
@@ -326,5 +479,5 @@ public class Basic_movment extends Application {
 				}
 			}
 		}
-}
+
 
