@@ -11,10 +11,14 @@ public class Platforms {
 		this.x = x;
 		this.y = y;
 		this.stage = stage;
-	
+		
 	}public Rectangle getRect() {
-		int platformWidth = 50;
+		int platformWidth = 60;
 		int platformHeight = 10;
+		if(stage==1) {
+			platformWidth +=40;
+			platformHeight +=40;
+		}
 		return new Rectangle(x, y, platformWidth, platformHeight);
  
 	}

@@ -21,7 +21,7 @@ import javafx.stage.Stage;
 import simpleIO.Console;
 
 
-public class Basic_movment extends Application {
+public class Scroller extends Application {
 
 
 
@@ -34,7 +34,7 @@ public class Basic_movment extends Application {
 		final int TANK_HEIGHT = 10;
 		final int TANK_WIDTH = 10;
 		//all of the movment variables
-		int tank1XSart = 0;
+		int tank1XSart = SCREEN_WIDTH/10;
 		int tank1YSart = 0;
 		double dX1Tank = 0;
 		double dY1Tank = 0;
@@ -44,25 +44,7 @@ public class Basic_movment extends Application {
 		int[] startXSpots = new int[10];
 		int[] startYSpots = new int[10];
 
-		int spacing = 150;
-//		int level2 = SCREEN_HEIGHT/2;
-//		int level1 = level2+spacing;
-//		int level3 = level2-spacing;
-//		int level2B = SCREEN_HEIGHT/2+75;
-//		int level1B = level2B+spacing;
-//		int level3B = level2B-(spacing*1);
-//		int level4B = level2B-(spacing*2);
-//		
-//		int a = 0;
-//		int Colom1 = a;
-//		int Colom2 = a+spacing;
-//		int Colom3 = a+spacing*2;
-//		int Colom4 = a+spacing*3;
-//		int Colom5 = a+spacing*4;
-//		int Colom6 = a+spacing*5;
-//		int Colom7 = a+spacing*6;
-//		int Colom8 = a+spacing*7;
-//		int Colom9 = a+spacing*8;
+		int spacing = 40;
 		List<List<Platforms>> sceen1 = new ArrayList<List<Platforms>>();
 		
 		int botWidth = 5;
@@ -74,8 +56,7 @@ public class Basic_movment extends Application {
 		int offscreen = -500;
 		int shotSize = 2;
 		int shotXSpeed = 5;
-		
-		int xofset = 0;
+		int BaseX=0;
 		// shapes for the game
 		
 		
@@ -169,20 +150,22 @@ public class Basic_movment extends Application {
 							p.x-=3;
 								
 							}
-						
+						BaseX-=3;
 							player1.setX(player1.getX()-3);
 						
 						}
 					if(player1.getX() <= SCREEN_WIDTH*0.1) {
+						if(BaseX!=0) {
 						for(Platforms p:sceen1.get(0)) {
 							
 							p.x+=3;
 								
 							}
-						
+						BaseX+=3;
 							player1.setX(player1.getX()+3);
 						
-						}
+						}}
+					
 					
 					if (player1.getY()+ 10 < scene.getHeight()) {
 		            	dY1Tank += GRAVITY;
@@ -190,6 +173,7 @@ public class Basic_movment extends Application {
 					if (player1.getX()>=SCREEN_WIDTH*(0.75)) {
 						moveScreen();
 					}
+					
 		            
 
 					
@@ -309,6 +293,7 @@ public class Basic_movment extends Application {
 		public static void main(String[] args) {
 			launch(args);
 		}
+		
 		private void jump() {
 			if(jumptoken == 1) {
 			//maybe make accelerated jumping
@@ -323,7 +308,8 @@ public class Basic_movment extends Application {
 				dX1Tank = 0;
 			}
             if (player1.getY()+10> scene.getHeight()) {
-            	player1.setY(player1.getY()-dY1Tank);
+            	player1.setY(0);
+            	player1.setX(SCREEN_WIDTH/10);
             	dY1Tank = 0; //reverse direction
             	jumptoken = 1;
             }
@@ -333,26 +319,112 @@ public class Basic_movment extends Application {
 		private void inisializePlatforms() {
 			List<Platforms> sceen1 = new ArrayList<Platforms>();
 			String a = 
-			"011111110\n"+
-			"011111110\n"+
-			"011111110\n"+
-			"011111110\n"+
-			"011110110\n"+
-			"010111110\n"+
-			"011110110\n"+
-			"010101010\n"+
-			"001010100\n"+
-			"010101010\n"+
-			"001010100\n"+
-			"010101010\n"+
-			"001010100\n";
-			int x = 0;
+			
+			"00001001001001\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00001001001001\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00001001001001\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00001001001001\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00001001001001\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00001001001001\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			
+			"00001001001001\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000010000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000001010100\n"+
+			"0000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000010000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000001010100\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000010000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			"00000000000000\n"+
+			
+			
+			
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n"+
+			"222222222222222222\n";
+			
+			int x = SCREEN_WIDTH/10;
 			for(String s: a.split("\n")) {
 				int y = 0;
 				
 				for(String s1: s.split("")) {
 					if(s1.equals("1")) {
 						sceen1.add(new Platforms(x,y,0));
+					}
+					if(s1.equals("2")) {
+						sceen1.add(new Platforms(x,y,1));
 					}
 					y+=spacing;
 					
