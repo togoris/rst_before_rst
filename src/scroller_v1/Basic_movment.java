@@ -27,8 +27,8 @@ public class Basic_movment extends Application {
 
 		// initial size of screen; game still works after resize
 		long lastTime = 0;
-		static final int SCREEN_WIDTH = 1280;
-		static final int SCREEN_HEIGHT = 720;
+		static final int SCREEN_WIDTH = 1200;
+		static final int SCREEN_HEIGHT = 700;
 		// Constants for speed and size of objects in the game
 		final int BALL_SIZE = 5;
 		final int TANK_HEIGHT = 10;
@@ -67,8 +67,8 @@ public class Basic_movment extends Application {
 		
 		int botWidth = 5;
 		int botHeight = 5;
-		int platformWidth = 50;
-		int platformHeight = 10;
+		int platformWidth = 60;
+		int platformHeight = 20;
 		int godown;
 		int shotCounter = 0;
 		int offscreen = -500;
@@ -333,26 +333,37 @@ public class Basic_movment extends Application {
 		private void inisializePlatforms() {
 			List<Platforms> sceen1 = new ArrayList<Platforms>();
 			String a = 
-			"000000000\n"+
-			"111111111\n"+
-			"111111111\n"+
-			"111111111\n"+
-			"111111111\n"+
-			"111111111\n"+
-			"000000000\n";
-			int y = 0;
+			"011111110\n"+
+			"011111110\n"+
+			"011111110\n"+
+			"011111110\n"+
+			"011110110\n"+
+			"010111110\n"+
+			"011110110\n"+
+			"010101010\n"+
+			"001010100\n"+
+			"010101010\n"+
+			"001010100\n"+
+			"010101010\n"+
+			"001010100\n";
+			int x = 0;
 			for(String s: a.split("\n")) {
-				int x = 0;
+				int y = 0;
+				
 				for(String s1: s.split("")) {
 					if(s1.equals("1")) {
 						sceen1.add(new Platforms(x,y,0));
 					}
-					x+=spacing;
+					y+=spacing;
+					
+					
 					
 				}
-				y+=spacing;
+				x+=spacing;
 				
 			}
+			
+			
 			
 			this.sceen1.add(sceen1);
 //			int startValue = 0;
