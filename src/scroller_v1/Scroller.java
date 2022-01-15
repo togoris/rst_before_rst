@@ -2,6 +2,10 @@ package scroller_v1;
 
 
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +13,6 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -28,7 +31,7 @@ public class Scroller extends Application {
 		// initial size of screen; game still works after resize
 		long lastTime = 0;
 		static final int SCREEN_WIDTH = 1200;
-		static final int SCREEN_HEIGHT = 700;
+		static final int SCREEN_HEIGHT = 900;
 		// Constants for speed and size of objects in the game
 		final int BALL_SIZE = 5;
 		final int TANK_HEIGHT = 10;
@@ -44,8 +47,8 @@ public class Scroller extends Application {
 		int[] startXSpots = new int[10];
 		int[] startYSpots = new int[10];
 
-		int spacing = 40;
-		List<List<Platforms>> sceen1 = new ArrayList<List<Platforms>>();
+	
+		List<Platforms> sceen1 = new ArrayList<Platforms>();
 		
 		int botWidth = 5;
 		int botHeight = 5;
@@ -129,7 +132,7 @@ public class Scroller extends Application {
 				public void handle(long now) {
 					root.getChildren().clear();
 					root.getChildren().add(player1);
-					for(Platforms p:sceen1.get(0)) {
+					for(Platforms p:sceen1) {
 						root.getChildren().add(p.getRect());
 					}
 					
@@ -145,7 +148,7 @@ public class Scroller extends Application {
 					}
 					
 					if(player1.getX() >= SCREEN_WIDTH*0.75) {
-						for(Platforms p:sceen1.get(0)) {
+						for(Platforms p:sceen1) {
 							
 							p.x-=3;
 								
@@ -155,8 +158,8 @@ public class Scroller extends Application {
 						
 						}
 					if(player1.getX() <= SCREEN_WIDTH*0.1) {
-						if(BaseX!=0) {
-						for(Platforms p:sceen1.get(0)) {
+						if(findFistX()<0) {
+						for(Platforms p:sceen1) {
 							
 							p.x+=3;
 								
@@ -170,9 +173,7 @@ public class Scroller extends Application {
 					if (player1.getY()+ 10 < scene.getHeight()) {
 		            	dY1Tank += GRAVITY;
 		            }
-					if (player1.getX()>=SCREEN_WIDTH*(0.75)) {
-						moveScreen();
-					}
+					
 					
 		            
 
@@ -183,20 +184,19 @@ public class Scroller extends Application {
 			
 			timer.start();
 
-			for (int i = 0; i < sceen1.size(); i++) {
-					for (Platforms rectangle : sceen1.get(i)) {
+					for (Platforms rectangle : sceen1) {
 						root.getChildren().add(rectangle.getRect());
 					}
-				}
+				
 			
 			for (Circle Circle : PlayerShots) {
 			    root.getChildren().add(Circle);
 			}
-			for(int i=0; i <BotShots.length; i++) {
-				for (Circle Circle : BotShots[i]) {
-					root.getChildren().add(Circle);
-				}
-				}
+//			for(int i=0; i <BotShots.length; i++) {
+//				for (Circle Circle : BotShots[i]) {
+//					root.getChildren().add(Circle);
+//				}
+//				}
 				
 			for(int i = 0; i < bots.length; i++) {
 				for (Rectangle rectangle : bots[i]) {
@@ -216,16 +216,15 @@ public class Scroller extends Application {
 
 		}
 		private void checkPlatforms() {
-			for (int i = 0; i < sceen1.size(); i++) {
-				for(int j = 0; j < sceen1.get(i).size(); j++) {
+				for(int j = 0; j < sceen1.size(); j++) {
 						
-					if(1==checkOnscreen(sceen1.get(i).get(j).getRect())) {
-						platformcheck.add(sceen1.get(i).get(j));
+					if(1==checkOnscreen(sceen1.get(j).getRect())) {
+						platformcheck.add(sceen1.get(j));
 					}
 						
 					}
 				}
-			}
+			
 		
 		private int checkOnscreen(Rectangle platform) {
 			int check;
@@ -237,6 +236,15 @@ public class Scroller extends Application {
 		}
 		private void moveScreen() {
 			
+		}
+		private int findFistX() {
+			int x = Integer.MAX_VALUE;
+			for(int i=0;i<sceen1.size(); i++) {
+				if(sceen1.get(i).x<x) {
+					x= sceen1.get(i).x;
+				}
+			}
+			return x;
 		}
 		private void handleKeyPressed(KeyEvent event) {
 			
@@ -316,166 +324,28 @@ public class Scroller extends Application {
             
             
 		}
-		private void inisializePlatforms() {
-			List<Platforms> sceen1 = new ArrayList<Platforms>();
-			String a = 
+		private void inisializePlatforms() throws IOException {
 			
-			"00001001001001\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00001001001001\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00001001001001\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00001001001001\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00001001001001\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00001001001001\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			
-			"00001001001001\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000010000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000001010100\n"+
-			"0000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000010000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000001010100\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000010000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
-			"00000000000000\n"+
+			File plats = new File("levels/platformSet1");
+			BufferedReader reader = new BufferedReader(new FileReader(plats));
 			
 			
 			
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n"+
-			"222222222222222222\n";
 			
-			int x = SCREEN_WIDTH/10;
-			for(String s: a.split("\n")) {
-				int y = 0;
+			String s = "";
+			while((s = reader.readLine()) != null){
+				String[] parts = s.split(",");
+				Platforms platform = new Platforms();
+				sceen1.add(platform);
 				
-				for(String s1: s.split("")) {
-					if(s1.equals("1")) {
-						sceen1.add(new Platforms(x,y,0));
-					}
-					if(s1.equals("2")) {
-						sceen1.add(new Platforms(x,y,1));
-					}
-					y+=spacing;
-					
-					
-					
-				}
-				x+=spacing;
 				
 			}
+			reader.close();
 			
 			
+		}
+		private void placingplatforms() {
 			
-			this.sceen1.add(sceen1);
-//			int startValue = 0;
-			
-//			platforms[0][0][0] = new Rectangle(startValue+Colom1, level1, platformWidth, platformHeight);
-//			platforms[0][0][1] = new Rectangle(startValue+Colom1, level2, platformWidth, platformHeight);
-//			platforms[0][0][2] = new Rectangle(startValue+Colom1, level3, platformWidth, platformHeight);
-//			platforms[0][0][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
-//				platforms[0][1][0] = new Rectangle(startValue+Colom2, level1B, platformWidth, platformHeight);
-//				platforms[0][1][1] = new Rectangle(startValue+Colom2, level2B, platformWidth, platformHeight);
-//				platforms[0][1][2] = new Rectangle(startValue+Colom2, level3B, platformWidth, platformHeight);
-//				platforms[0][1][3] = new Rectangle(startValue+Colom2, level4B, platformWidth, platformHeight);
-//			platforms[0][2][0] = new Rectangle(startValue+Colom3, level1, platformWidth, platformHeight);
-//			platforms[0][2][1] = new Rectangle(startValue+Colom3, level2, platformWidth, platformHeight);
-//			platforms[0][2][2] = new Rectangle(startValue+Colom3, level3, platformWidth, platformHeight);
-//			platforms[0][2][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
-//				platforms[0][3][0] = new Rectangle(startValue+Colom4, level1B, platformWidth, platformHeight);
-//				platforms[0][3][1] = new Rectangle(startValue+Colom4, level2B, platformWidth, platformHeight);
-//				platforms[0][3][2] = new Rectangle(startValue+Colom4, level3B, platformWidth, platformHeight);
-//				platforms[0][3][3] = new Rectangle(startValue+Colom4, level4B, platformWidth, platformHeight);
-//			platforms[0][4][0] = new Rectangle(startValue+Colom5, level3, platformWidth, platformHeight);
-//			platforms[0][4][1] = new Rectangle(startValue+Colom5, level1, platformWidth, platformHeight);
-//			platforms[0][4][2] = new Rectangle(startValue+Colom5, level2, platformWidth, platformHeight);
-//			platforms[0][4][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
-//				platforms[0][5][0] = new Rectangle(startValue+Colom6, level4B, platformWidth, platformHeight);
-//				platforms[0][5][1] = new Rectangle(startValue+Colom6, level1B, platformWidth, platformHeight);
-//				platforms[0][5][2] = new Rectangle(startValue+Colom6, level2B, platformWidth, platformHeight);
-//				platforms[0][5][3] = new Rectangle(startValue+Colom6, level3B, platformWidth, platformHeight);
-//			platforms[0][6][0] = new Rectangle(startValue+Colom7, level3, platformWidth, platformHeight);
-//			platforms[0][6][1] = new Rectangle(startValue+Colom7, level1, platformWidth, platformHeight);
-//			platforms[0][6][2] = new Rectangle(startValue+Colom7, level2, platformWidth, platformHeight);
-//			platforms[0][6][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
-//				platforms[0][7][0] = new Rectangle(startValue+Colom8, level4B, platformWidth, platformHeight);
-//				platforms[0][7][1] = new Rectangle(startValue+Colom8, level1B, platformWidth, platformHeight);
-//				platforms[0][7][2] = new Rectangle(startValue+Colom8, level2B, platformWidth, platformHeight);
-//				platforms[0][7][3] = new Rectangle(startValue+Colom8, level3B, platformWidth, platformHeight);
-//			platforms[0][8][0] = new Rectangle(startValue+Colom9, level3, platformWidth, platformHeight);
-//			platforms[0][8][1] = new Rectangle(startValue+Colom9, level1, platformWidth, platformHeight);
-//			platforms[0][8][2] = new Rectangle(startValue+Colom9 , level2, platformWidth, platformHeight);
-//			platforms[0][8][3] = new Rectangle(offscreen, offscreen, platformWidth, platformHeight);
 		}
 		private void inisializeEnemies() {
 			bots[0][0] = new Rectangle(offscreen, offscreen, botWidth, botHeight);
@@ -494,38 +364,6 @@ public class Scroller extends Application {
 			PlayerShots[8] = new Circle(offscreen,offscreen,shotSize);
 			PlayerShots[9] = new Circle(offscreen,offscreen,shotSize);
 			
-			BotShots[0][0] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[0][1] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[0][2] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[0][3] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[0][4] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[0][5] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[0][6] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[0][7] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[0][8] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[0][9] = new Circle(offscreen,offscreen,shotSize);
-			
-			BotShots[1][0] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[1][1] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[1][2] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[1][3] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[1][4] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[1][5] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[1][6] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[1][7] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[1][8] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[1][9] = new Circle(offscreen,offscreen,shotSize);
-
-			BotShots[2][0] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[2][1] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[2][2] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[2][3] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[2][4] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[2][5] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[2][6] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[2][7] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[2][8] = new Circle(offscreen,offscreen,shotSize);
-			BotShots[2][9] = new Circle(offscreen,offscreen,shotSize);
 		}
 		private void shoot() {
 			if(shotCounter >=9)
@@ -540,9 +378,8 @@ public class Scroller extends Application {
 		}
 		private void platformCheck(Rectangle rectangle){
 			Bounds tank = rectangle.getBoundsInLocal();
-			for (int i = 0; i < sceen1.size(); i++) {
-				for(int j = 0; j < sceen1.get(i).size();j++) {
-					Platforms checker = sceen1.get(i).get(j);
+				for(int j = 0; j < sceen1.size();j++) {
+					Platforms checker = sceen1.get(j);
 					Bounds wall = checker.getRect().getBoundsInLocal();
 						if(godown == 0) {
 							if (tank.intersects(wall)) {
@@ -561,6 +398,5 @@ public class Scroller extends Application {
 					}
 				}
 			}
-		}
 
 

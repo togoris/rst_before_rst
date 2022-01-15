@@ -15,7 +15,7 @@ public class Platforms {
 	}public Rectangle getRect() {
 		int platformWidth = 60;
 		int platformHeight = 10;
-		if(stage==1) {
+		if(stage==2) {
 			platformWidth +=40;
 			platformHeight +=40;
 		}
