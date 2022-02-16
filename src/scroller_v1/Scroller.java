@@ -46,7 +46,7 @@ public class Scroller extends Application {
 		//array for the starting potitions for the tanks
 		int[] startXSpots = new int[10];
 		int[] startYSpots = new int[10];
-
+		long lastframetime = System.currentTimeMillis();
 	
 		List<Platforms> sceen1 = new ArrayList<Platforms>();
 		
@@ -61,7 +61,7 @@ public class Scroller extends Application {
 		int shotXSpeed = 5;
 		int BaseX=0;
 		// shapes for the game
-		
+		List<bot> bots = new ArrayList<bot>();
 		
 		Rectangle player1;
 		
@@ -77,7 +77,6 @@ public class Scroller extends Application {
 //		Rectangle[][][] platforms = new Rectangle[1][9][4];
 		List<Platforms> platformcheck = new ArrayList<Platforms>();
 		
-		Rectangle[][] bots = new Rectangle[3][1];
 		
  
 		Circle[] PlayerShots = new Circle[10];
@@ -107,20 +106,12 @@ public class Scroller extends Application {
 			
 			player1.setFill(Paint.valueOf("Red"));
 			inisializePlatforms();
-			inisializeEnemies();
 			inisializeShots();
 			
 			
+	
 			
-			bot botA = new bot1(offscreen,offscreen);
-			bot botB = new bot2(offscreen,offscreen);
-			bot botC = new bot3(offscreen,offscreen);
-			//the mesage that1 shows the points
-			botA.move();
-			botB.move();
-			botC.move();
-			
-			// add all elements to the scene graph
+
 			//ilitialy drawing everything
 			Group root = new Group(player1);
 			//drawing all of the walls (thank u for this code miss)
@@ -135,12 +126,20 @@ public class Scroller extends Application {
 					for(Platforms p:sceen1) {
 						root.getChildren().add(p.getRect());
 					}
+					for(bot B: bots) {
+						root.getChildren().add(B.getRect());
+					}
 					
 					checkPlatforms();
 					wallsColition();
 					platformCheck(player1);
 					player1.setY(player1.getY() + dY1Tank);
 					player1.setX(player1.getX() + dX1Tank);
+					long dif = System.currentTimeMillis()-lastframetime;
+					for(bot A: bots) {
+						A.move(dif, sceen1,player1);
+						
+					}
 					
 					for(int i=0; i<PlayerShots.length; i++) {
 						PlayerShots[i].setCenterX(PlayerShots[i].getCenterX()+dxPlayerShots[i]);
@@ -178,7 +177,8 @@ public class Scroller extends Application {
 		            
 
 					
-
+					lastframetime = System.currentTimeMillis();
+					
 				}
 			};
 			
@@ -198,11 +198,8 @@ public class Scroller extends Application {
 //				}
 //				}
 				
-			for(int i = 0; i < bots.length; i++) {
-				for (Rectangle rectangle : bots[i]) {
-					root.getChildren().add(rectangle);
-					}
-			}
+			
+			
 			// Create the scene and set it to respond to user events
 			scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
 			scene.setOnKeyPressed(event -> handleKeyPressed(event));
@@ -233,9 +230,6 @@ public class Scroller extends Application {
 				return 1;
 			}else
 				return 0;
-		}
-		private void moveScreen() {
-			
 		}
 		private int findFistX() {
 			int x = Integer.MAX_VALUE;
@@ -326,31 +320,21 @@ public class Scroller extends Application {
 		}
 		private void inisializePlatforms() throws IOException {
 			
-			File plats = new File("levels/platformSet1");
-			BufferedReader reader = new BufferedReader(new FileReader(plats));
-			
-			
-			
-			
-			String s = "";
-			while((s = reader.readLine()) != null){
-				String[] parts = s.split(",");
-				Platforms platform = new Platforms();
+		
+			for(int i = 0;i<500; i++) {
+				Platforms platform = new Platforms(i*150,500,1);
 				sceen1.add(platform);
-				
-				
 			}
-			reader.close();
-			
-			
 		}
+		
 		private void placingplatforms() {
 			
-		}
-		private void inisializeEnemies() {
-			bots[0][0] = new Rectangle(offscreen, offscreen, botWidth, botHeight);
-			bots[1][0] = new Rectangle(offscreen, offscreen, botWidth, botHeight);
-			bots[2][0] = new Rectangle(offscreen, offscreen, botWidth, botHeight);
+			
+			
+			
+			
+			
+			
 		}
 		private void inisializeShots() {
 			PlayerShots[0] = new Circle(offscreen,offscreen,shotSize);
