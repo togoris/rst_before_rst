@@ -3,8 +3,8 @@ package scroller_v1;
 import javafx.scene.shape.Rectangle;
 
 public class Platforms {
-	int x;
-	int y;
+	private int x;
+	private int y;
 	int stage;
 	public Platforms(int x, int y, int stage) {
 		super();
